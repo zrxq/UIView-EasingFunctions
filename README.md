@@ -19,7 +19,7 @@ Easing functions?
 Usage
 -----
 
-Let's say you want to make a view's `frame` animation bouncy:
+Let's say you want to make a bouncy `frame` animation:
 
 ```objc
 #import <UIView+EasingFunctions.h>
