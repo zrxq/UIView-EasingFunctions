@@ -1,0 +1,17 @@
+PODS:
+  - AHEasing (1.1)
+  - UIView+EasingFunctions (0.0.1)
+
+DEPENDENCIES:
+  - AHEasing (~> 1.1)
+  - UIView+EasingFunctions (from `../`)
+
+EXTERNAL SOURCES:
+  UIView+EasingFunctions:
+    :path: ../
+
+SPEC CHECKSUMS:
+  AHEasing: b9a02ca67d0d663e2a8b83fd24fa8c2ecc5ddf9b
+  UIView+EasingFunctions: a8d9f211201b336c777d30df571619d853ca7736
+
+COCOAPODS: 0.19.0
