@@ -68,7 +68,7 @@ There's a [sample app project](https://github.com/zrxq/UIView-EasingFunctions/tr
 What properties are supported?
 ------------------------------
 
-Everything animatable should work just fine, except for `contentStretch`. It was recently deprecated anyway.
+All [animatable properties](http://developer.apple.com/library/ios/documentation/UIKit/Reference/UIView_Class/UIView/UIView.html#//apple_ref/doc/uid/TP40006816-CH3-SW131) of `UIView`.
 
 Gotchas
 -------
