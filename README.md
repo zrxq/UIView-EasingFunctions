@@ -57,6 +57,8 @@ What if you only want one specific `frame` animation to be bouncy? Use the compl
 }];
 ```
 
+Check out the [sample app](https://github.com/zrxq/UIView-EasingFunctions/tree/master/EasingSampleApp) to see how it works (make sure to open `.xcworkspace` file, not the `.xcodeproj`).
+
 What properties are supported?
 ------------------------------
 
