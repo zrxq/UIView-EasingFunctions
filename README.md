@@ -16,6 +16,12 @@ Easing functions?
 *from [easings.net](http://easings.net)* (you should probably check the site, it does a great job explaining and illustrating various easing functions)
 
 
+Installation
+------------
+1. [Download](https://codeload.github.com/zrxq/UIView-EasingFunctions/zip/master) and unarchive.
+2. Drag and drop `UIView+EasingFunctions` subfolder, containing `UIView+EasingFunctions.h` and `.m` files into your Xcode project's Project Navigator (left pane), click Finish.
+3. Add `QuartzCore.framework` to your project's `Link Binary With Libraries` build phase.
+
 Usage
 -----
 
