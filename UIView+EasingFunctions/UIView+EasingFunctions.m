@@ -339,15 +339,39 @@ static NSString *const LayerEasingFunctionsKey = @"ui+ef_LayerEasingFunctionsKey
 @implementation UIView (Easing)
 
 
-- (void)setEasingFunction:(ViewEasingFunctionPointerType)function forKeyPath:(NSString *)layerKeyPath {
+- (void)setEasingFunction:(ViewEasingFunctionPointerType)function forKeyPath:(NSString *)keyPath {
     
-    [self.layer setEasingFunction:function forKeyPath:layerKeyPath];
+    if ([keyPath isEqualToString:@"alpha"])
+        [self.layer setEasingFunction:function forKeyPath:@"opacity"];
     
+    if ([keyPath isEqualToString:@"center"])
+        [self.layer setEasingFunction:function forKeyPath:@"position"];
+    
+    else if ([keyPath isEqualToString:@"frame"]) {
+        [self.layer setEasingFunction:function forKeyPath:@"position"];
+        [self.layer setEasingFunction:function forKeyPath:@"bounds"];
+    }
+    
+    else
+        [self.layer setEasingFunction:function forKeyPath:keyPath];
+
 }
 
-- (void)removeEasingFunctionForKeyPath:(NSString *)layerKeyPath {
+- (void)removeEasingFunctionForKeyPath:(NSString *)keyPath {
     
-    [self.layer removeEasingFunctionForKeyPath:layerKeyPath];
+    if ([keyPath isEqualToString:@"alpha"])
+        [self.layer removeEasingFunctionForKeyPath:@"opacity"];
+    
+    if ([keyPath isEqualToString:@"center"])
+        [self.layer removeEasingFunctionForKeyPath:@"position"];
+    
+    else if ([keyPath isEqualToString:@"frame"]) {
+        [self.layer removeEasingFunctionForKeyPath:@"position"];
+        [self.layer removeEasingFunctionForKeyPath:@"bounds"];
+    }
+    
+    else
+        [self.layer removeEasingFunctionForKeyPath:keyPath];
     
 }
 

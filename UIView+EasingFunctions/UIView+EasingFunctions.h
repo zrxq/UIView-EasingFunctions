@@ -12,8 +12,8 @@ typedef CGFloat (*ViewEasingFunctionPointerType)(CGFloat);
 
 @interface UIView (Easing)
 
-- (void)setEasingFunction:(ViewEasingFunctionPointerType)function forKeyPath:(NSString *)layerKeyPath;
+- (void)setEasingFunction:(ViewEasingFunctionPointerType)function forKeyPath:(NSString *)keyPath;
 
-- (void)removeEasingFunctionForKeyPath:(NSString *)layerKeyPath;
+- (void)removeEasingFunctionForKeyPath:(NSString *)keyPath;
 
 @end
