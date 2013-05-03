@@ -252,8 +252,9 @@ static BOOL Swizzled = NO;
             }
             
             /* CGFloat */
-            else if (strcmp(@encode(CGFloat), [fromValue objCType]) == 0) {
-                
+            // check for BOTH float and double
+            else if (strcmp("f", [fromValue objCType]) == 0 || strcmp("d", [fromValue objCType]) == 0) {
+
 #if CGFLOAT_IS_DOUBLE
                 CGFloat from = [(NSNumber *)fromValue doubleValue];
                 CGFloat to = [(NSNumber *)toValue doubleValue];
