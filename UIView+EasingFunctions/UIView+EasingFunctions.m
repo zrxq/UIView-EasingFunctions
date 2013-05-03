@@ -188,6 +188,8 @@ static BOOL Swizzled = NO;
         Method substitute = class_getInstanceMethod(CALayer.class, @selector(easing_addAnimation:forKey:));
 
         method_exchangeImplementations(original, substitute);
+
+        Swizzled = YES;
     }
 
     NSMutableDictionary *easingFunctions = [self valueForKey:LayerEasingFunctionsKey];
