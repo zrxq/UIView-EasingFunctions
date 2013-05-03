@@ -176,21 +176,26 @@ static NSString *const LayerEasingFunctionsKey = @"ui+ef_LayerEasingFunctionsKey
 
 @implementation CALayer (Easing)
 
+static BOOL Swizzled = NO;
+
 - (void)setEasingFunction:(ViewEasingFunctionPointerType)function forKeyPath:(NSString *)layerKeyPath {
-    
+
+    if (!Swizzled)
+    {
+        /* swizzle addAnimation:forKey: */
+
+        Method original = class_getInstanceMethod(CALayer.class, @selector(addAnimation:forKey:));
+        Method substitute = class_getInstanceMethod(CALayer.class, @selector(easing_addAnimation:forKey:));
+
+        method_exchangeImplementations(original, substitute);
+    }
+
     NSMutableDictionary *easingFunctions = [self valueForKey:LayerEasingFunctionsKey];
     
     if (!easingFunctions) {
         
         easingFunctions = [NSMutableDictionary dictionary];
         [self setValue:easingFunctions forKey:LayerEasingFunctionsKey];
-        
-        /* swizzle addAnimation:forKey: */
-        
-        Method original = class_getInstanceMethod(CALayer.class, @selector(addAnimation:forKey:));
-        Method substitute = class_getInstanceMethod(CALayer.class, @selector(easing_addAnimation:forKey:));
-        
-        method_exchangeImplementations(original, substitute);
         
     }
     
@@ -206,20 +211,7 @@ static NSString *const LayerEasingFunctionsKey = @"ui+ef_LayerEasingFunctionsKey
         return;
     
     [easingFunctions removeObjectForKey:layerKeyPath];
-    
-    if (![easingFunctions count]) {
-        
-        /* the table is empty, unswizzle addAnimation:forKey: and remove the property */
-        
-        Method substitute = class_getInstanceMethod(CALayer.class, @selector(addAnimation:forKey:));
-        Method original = class_getInstanceMethod(CALayer.class, @selector(easing_addAnimation:forKey:));
-        
-        method_exchangeImplementations(original, substitute);
-        
-        [self setValue:nil forKey:LayerEasingFunctionsKey];
-        
-    }
-    
+
 }
 
 - (void)easing_addAnimation:(CAAnimation *)anim forKey:(NSString *)keyPath {
