@@ -304,7 +304,7 @@ static BOOL Swizzled = NO;
         
         override.duration = anim.duration;
         
-        override.beginTime = anim.beginTime;
+        override.beginTime = anim.beginTime + [self convertTime:CACurrentMediaTime() fromLayer:nil];
         override.speed = anim.speed;
         override.timeOffset = anim.timeOffset;
         override.repeatCount = anim.repeatCount;
