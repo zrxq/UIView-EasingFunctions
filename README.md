@@ -60,7 +60,7 @@ That's it. Now *any* `frame` animation of this view will use `BounceEaseOut` eas
 }];
 ```
 
-What if you only want one specific `frame` animation to be bouncy? Use the completion block to remove the easing function:
+What if you only want one specific animation block to be affected? Use the completion block to remove the easing function:
 
 ```objc
 [UIView animateWithDuration:.6 animations:^{
