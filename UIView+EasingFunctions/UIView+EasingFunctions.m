@@ -303,8 +303,9 @@ static BOOL Swizzled = NO;
     if (override) {
         
         override.duration = anim.duration;
-        
+
         override.beginTime = anim.beginTime + [self convertTime:CACurrentMediaTime() fromLayer:nil];
+        
         override.speed = anim.speed;
         override.timeOffset = anim.timeOffset;
         override.repeatCount = anim.repeatCount;
@@ -338,7 +339,7 @@ static BOOL Swizzled = NO;
     if ([keyPath isEqualToString:@"alpha"])
         [self.layer setEasingFunction:function forKeyPath:@"opacity"];
     
-    if ([keyPath isEqualToString:@"center"])
+    else if ([keyPath isEqualToString:@"center"])
         [self.layer setEasingFunction:function forKeyPath:@"position"];
     
     else if ([keyPath isEqualToString:@"frame"]) {
@@ -356,7 +357,7 @@ static BOOL Swizzled = NO;
     if ([keyPath isEqualToString:@"alpha"])
         [self.layer removeEasingFunctionForKeyPath:@"opacity"];
     
-    if ([keyPath isEqualToString:@"center"])
+    else if ([keyPath isEqualToString:@"center"])
         [self.layer removeEasingFunctionForKeyPath:@"position"];
     
     else if ([keyPath isEqualToString:@"frame"]) {
