@@ -218,92 +218,97 @@ static BOOL Swizzled = NO;
 
 - (void)easing_addAnimation:(CAAnimation *)anim forKey:(NSString *)keyPath {
     
+    NSDictionary *easingFunctions = [self valueForKey:LayerEasingFunctionsKey];
+    ViewEasingFunctionPointerType function = [[easingFunctions valueForKey:keyPath] pointerValue];
+    
+    if (!function || ![anim isKindOfClass:[CABasicAnimation class]]) {
+        
+        /* nothing to do, use the original addAnimation:forKey: and return */
+        [self easing_addAnimation:anim forKey:keyPath];
+        
+        return;
+        
+    }
+    
     CAAnimation *override;
     
-    if ([anim isKindOfClass:[CABasicAnimation class]]) {
+    CABasicAnimation *basicAnimation = (CABasicAnimation *)anim;
+    
+    NSValue *curentValue = [self valueForKey:keyPath];
+    NSValue *fromValue = basicAnimation.fromValue ?: curentValue;
+    NSValue *toValue = basicAnimation.toValue ?: curentValue;
+    
+    if (![fromValue isKindOfClass:[NSValue class]]) {
         
-        CABasicAnimation *basicAnimation = (CABasicAnimation *)anim;
+        /* Foundation objects */
         
-        NSValue *curentValue = [self valueForKey:keyPath];
-        NSValue *fromValue = basicAnimation.fromValue ?: curentValue;
-        NSValue *toValue = basicAnimation.toValue ?: curentValue;
+        CFTypeRef ref = (__bridge CFTypeRef)(fromValue);
         
-        NSDictionary *easingFunctions = [self valueForKey:LayerEasingFunctionsKey];
-        ViewEasingFunctionPointerType function = [[easingFunctions valueForKey:keyPath] pointerValue];
-        
-        if (function) {
+        /* CGColorRef */
+        if (CFGetTypeID(ref) == CGColorGetTypeID()) {
             
+            CGColorRef from = (CGColorRef)ref;
+            CGColorRef to = (__bridge CGColorRef)toValue;
             
-            /* Foundation objects */
-            if (![fromValue isKindOfClass:[NSValue class]]) {
-                
-                CFTypeRef ref = (__bridge CFTypeRef)(fromValue);
-                
-                /* CGColorRef */
-                if (CFGetTypeID(ref) == CGColorGetTypeID()) {
-                    
-                    CGColorRef from = (CGColorRef)ref;
-                    CGColorRef to = (__bridge CGColorRef)toValue;
-                    
-                    override = AnimationWithCGColor(keyPath, function, from, to);
-                    
-                }
-                
-            }
-            
-            /* CGFloat */
-            else if (strcmp(@encode(CGFloat), [fromValue objCType]) == 0) {
-                
-#if CGFLOAT_IS_DOUBLE
-                CGFloat from = [(NSNumber *)fromValue doubleValue];
-                CGFloat to = [(NSNumber *)toValue doubleValue];
-#else
-                CGFloat from = [(NSNumber *)fromValue floatValue];
-                CGFloat to = [(NSNumber *)toValue floatValue];
-#endif
-                
-                override = AnimationWithCGFloat(keyPath, function, from, to);
-                
-            }
-            
-            /* CGPoint */
-            else if (strcmp(@encode(CGPoint), [fromValue objCType]) == 0) {
-                
-                CGPoint from = [fromValue CGPointValue];
-                CGPoint to = [toValue CGPointValue];
-                
-                override = AnimationWithCGPoint(keyPath, function, from, to);
-
-            }
-            
-            /* CGRect */
-            else if (strcmp(@encode(CGRect), [fromValue objCType]) == 0) {
-                
-                CGRect from = [fromValue CGRectValue];
-                CGRect to = [toValue CGRectValue];
-                
-                override = AnimationWithCGRect(keyPath, function, from, to);
-                
-            }
-
-            /* CATransform3D */
-            else if (strcmp(@encode(CATransform3D), [fromValue objCType]) == 0) {
-                
-                CATransform3D from = [fromValue CATransform3DValue];
-                CATransform3D to = [toValue CATransform3DValue];
-                
-                override = AnimationWithCATransform3D(keyPath, function, from, to);
-                
-            }
+            override = AnimationWithCGColor(keyPath, function, from, to);
             
         }
+        
+    }
+    
+    else if (strcmp(@encode(CGFloat), [fromValue objCType]) == 0) {
+
+        /* CGFloat */
+        
+#if CGFLOAT_IS_DOUBLE
+        CGFloat from = [(NSNumber *)fromValue doubleValue];
+        CGFloat to = [(NSNumber *)toValue doubleValue];
+#else
+        CGFloat from = [(NSNumber *)fromValue floatValue];
+        CGFloat to = [(NSNumber *)toValue floatValue];
+#endif
+        
+        override = AnimationWithCGFloat(keyPath, function, from, to);
+        
+    }
+    
+    else if (strcmp(@encode(CGPoint), [fromValue objCType]) == 0) {
+        
+        /* CGPoint */
+        
+        CGPoint from = [fromValue CGPointValue];
+        CGPoint to = [toValue CGPointValue];
+        
+        override = AnimationWithCGPoint(keyPath, function, from, to);
+        
+    }
+    
+    else if (strcmp(@encode(CGRect), [fromValue objCType]) == 0) {
+        
+        /* CGRect */
+        
+        CGRect from = [fromValue CGRectValue];
+        CGRect to = [toValue CGRectValue];
+        
+        override = AnimationWithCGRect(keyPath, function, from, to);
+        
+    }
+    
+    else if (strcmp(@encode(CATransform3D), [fromValue objCType]) == 0) {
+        
+        /* CATransform3D */
+        
+        CATransform3D from = [fromValue CATransform3DValue];
+        CATransform3D to = [toValue CATransform3DValue];
+        
+        override = AnimationWithCATransform3D(keyPath, function, from, to);
         
     }
     
     if (override) {
         
         override.duration = anim.duration;
-
+        
         override.beginTime = anim.beginTime + [self convertTime:CACurrentMediaTime() fromLayer:nil];
         
         override.speed = anim.speed;
@@ -319,12 +324,11 @@ static BOOL Swizzled = NO;
         
     } else {
         
-        /* use the original animation */
+        /* unknown property type, use the original animation */
         [self easing_addAnimation:anim forKey:keyPath];
         
     }
     
-
 }
 
 @end
@@ -332,7 +336,6 @@ static BOOL Swizzled = NO;
 #pragma mark - UIView
 
 @implementation UIView (Easing)
-
 
 - (void)setEasingFunction:(ViewEasingFunctionPointerType)function forKeyPath:(NSString *)keyPath {
     
@@ -343,8 +346,10 @@ static BOOL Swizzled = NO;
         [self.layer setEasingFunction:function forKeyPath:@"position"];
     
     else if ([keyPath isEqualToString:@"frame"]) {
+        
         [self.layer setEasingFunction:function forKeyPath:@"position"];
         [self.layer setEasingFunction:function forKeyPath:@"bounds"];
+        
     }
     
     else
@@ -361,8 +366,10 @@ static BOOL Swizzled = NO;
         [self.layer removeEasingFunctionForKeyPath:@"position"];
     
     else if ([keyPath isEqualToString:@"frame"]) {
+        
         [self.layer removeEasingFunctionForKeyPath:@"position"];
         [self.layer removeEasingFunctionForKeyPath:@"bounds"];
+        
     }
     
     else
