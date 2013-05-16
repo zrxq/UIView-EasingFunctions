@@ -18,6 +18,19 @@ Easing functions?
 
 Installation
 ------------
+
+###Cocoapods###
+
+[Cocoapods](https://github.com/CocoaPods/CocoaPods) is an Objective-C library manager.
+
+Adding UIView+EasingFunctions to your project using Cocoapods is as easy as adding the following line to your `Podfile`: 
+
+```ruby
+pod 'UIView+EasingFunctions', '~> 0.0.1'
+```
+
+###Manually###
+
 1. [Download](https://codeload.github.com/zrxq/UIView-EasingFunctions/zip/master) and unarchive.
 2. Drag and drop `UIView+EasingFunctions` subfolder, containing `UIView+EasingFunctions.h` and `.m` files into your Xcode project's Project Navigator (left pane), click Finish.
 3. Add `QuartzCore.framework` to your project's `Link Binary With Libraries` build phase.
@@ -28,7 +41,7 @@ Usage
 Let's say you want to make a bouncy `frame` animation:
 
 ```objc
-#import <UIView+EasingFunctions.h>
+#import <UIView+EasingFunctions/UIView+EasingFunctions.h>
 
 #import <AHEasing/easing.h>
 
