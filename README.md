@@ -50,7 +50,7 @@ Let's say you want to make a bouncy `frame` animation:
 [view setEasingFunction:BounceEaseOut forKeyPath:@"frame"];
 ```
 
-That's it. Now *any* `frame` animation of this view will use `BounceEaseOut` easing function (defined in [AHEasing](https://github.com/warrenm/AHEasing)):
+That's it. Now *any* `frame` animation of this view will use `BounceEaseOut` easing function (defined in [`AHEasing/easing.h`](https://github.com/warrenm/AHEasing/blob/master/AHEasing/easing.h)):
 
 ```objc
 [UIView animateWithDuration:.5 animations:^{
@@ -71,7 +71,7 @@ What if you only want one specific animation block to be affected? Use the compl
     
 } completion:^(BOOL finished) {
     
-    [self.dialogView removeEasingFunctionForKeyPath:@"center"];
+    [view removeEasingFunctionForKeyPath:@"center"];
     
 }];
 ```
