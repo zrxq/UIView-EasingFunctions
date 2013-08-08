@@ -16,5 +16,17 @@
 #define COCOAPODS_POD_AVAILABLE_UIView_EasingFunctions
 #define COCOAPODS_VERSION_MAJOR_UIView_EasingFunctions 0
 #define COCOAPODS_VERSION_MINOR_UIView_EasingFunctions 0
-#define COCOAPODS_VERSION_PATCH_UIView_EasingFunctions 1
+#define COCOAPODS_VERSION_PATCH_UIView_EasingFunctions 2
+
+// UIView+EasingFunctions/Bare
+#define COCOAPODS_POD_AVAILABLE_UIView_EasingFunctions_Bare
+#define COCOAPODS_VERSION_MAJOR_UIView_EasingFunctions_Bare 0
+#define COCOAPODS_VERSION_MINOR_UIView_EasingFunctions_Bare 0
+#define COCOAPODS_VERSION_PATCH_UIView_EasingFunctions_Bare 2
+
+// UIView+EasingFunctions/WithAHEasing
+#define COCOAPODS_POD_AVAILABLE_UIView_EasingFunctions_WithAHEasing
+#define COCOAPODS_VERSION_MAJOR_UIView_EasingFunctions_WithAHEasing 0
+#define COCOAPODS_VERSION_MINOR_UIView_EasingFunctions_WithAHEasing 0
+#define COCOAPODS_VERSION_PATCH_UIView_EasingFunctions_WithAHEasing 2
 

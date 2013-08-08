@@ -1,4 +1,3 @@
 platform :ios
 
 pod 'UIView+EasingFunctions', :path => '../'
-pod 'AHEasing', '~> 1.1'
