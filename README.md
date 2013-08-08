@@ -26,8 +26,11 @@ Installation
 Adding UIView+EasingFunctions to your project using Cocoapods is as easy as adding the following line to your `Podfile`: 
 
 ```ruby
-pod 'UIView+EasingFunctions', '~> 0.0.1'
+pod 'UIView+EasingFunctions'
 ```
+
+UIView+EasingFunctions podspec automatically adds [AHEasing](https://github.com/warrenm/AHEasing) to the project as well. If that's not something you want, use `pod 'UIView+EasingFunctions/Bare'` instead.
+
 
 ###Manually###
 
