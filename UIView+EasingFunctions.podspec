@@ -7,12 +7,12 @@ Pod::Spec.new do |s|
   s.license      = { :type => 'WTFPL', :file => 'LICENSE' }
   s.author       = { "Zoreslav Khimich" => "me@zoreslav.com" }
   s.source       = { :git => "https://github.com/zrxq/UIView-EasingFunctions.git", :tag => '0.0.2' }
-  s.source_files = 'UIView+EasingFunctions'
   s.framework  = 'QuartzCore'
   s.requires_arc = true
   s.platform     = :ios
 
   s.subspec 'Bare' do |ss|
+    ss.source_files = 'UIView+EasingFunctions'
   end
 
   s.subspec 'WithAHEasing' do |ss|
