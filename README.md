@@ -105,3 +105,5 @@ License
 -------
 
 [Do whatever you want](http://www.wtfpl.net).
+
+[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/f6f3629d6a69ec0ef158fc331429f593 "githalytics.com")](http://githalytics.com/zrxq/UIView-EasingFunctions)
