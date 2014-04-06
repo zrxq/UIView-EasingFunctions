@@ -180,6 +180,10 @@ static BOOL Swizzled = NO;
 
 - (void)setEasingFunction:(ViewEasingFunctionPointerType)function forKeyPath:(NSString *)layerKeyPath {
 
+    if (!layerKeyPath) {
+        return;
+    }
+    
     if (!Swizzled)
     {
         /* swizzle addAnimation:forKey: */
@@ -217,6 +221,10 @@ static BOOL Swizzled = NO;
 }
 
 - (void)easing_addAnimation:(CAAnimation *)anim forKey:(NSString *)keyPath {
+    
+    if (!keyPath) {
+        return;
+    }
     
     NSDictionary *easingFunctions = [self valueForKey:LayerEasingFunctionsKey];
     ViewEasingFunctionPointerType function = [[easingFunctions valueForKey:keyPath] pointerValue];
@@ -338,6 +346,10 @@ static BOOL Swizzled = NO;
 @implementation UIView (Easing)
 
 - (void)setEasingFunction:(ViewEasingFunctionPointerType)function forKeyPath:(NSString *)keyPath {
+    
+    if (!keyPath) {
+        return;
+    }
     
     if ([keyPath isEqualToString:@"alpha"])
         [self.layer setEasingFunction:function forKeyPath:@"opacity"];
