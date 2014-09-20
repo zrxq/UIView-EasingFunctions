@@ -13,6 +13,7 @@
 #pragma mark - CAKeyFrameAnimation factories
 
 static const NSUInteger KeyframeCount = 60;
+static const NSOperatingSystemVersion iOSVersion8 = (NSOperatingSystemVersion){8,0,0};
 
 CAKeyframeAnimation *AnimationWithCGFloat(NSString *keyPath, ViewEasingFunctionPointerType function, CGFloat fromValue, CGFloat toValue) {
     
@@ -56,8 +57,8 @@ CAKeyframeAnimation *AnimationWithCGPoint(NSString *keyPath, ViewEasingFunctionP
 	[animation setValues:values];
     
 	return animation;
-    
 }
+
 
 CAKeyframeAnimation *AnimationWithCGRect(NSString *keyPath, ViewEasingFunctionPointerType function, CGRect fromRect, CGRect toRect) {
     
@@ -160,6 +161,87 @@ CAKeyframeAnimation *AnimationWithCGColor(NSString *keyPath, ViewEasingFunctionP
     
 }
 
+
+CAKeyframeAnimation *AnimationWithCGSize(NSString *keyPath, ViewEasingFunctionPointerType function, CGSize fromPoint, CGSize toPoint) {
+    
+    NSMutableArray *values = [NSMutableArray arrayWithCapacity:KeyframeCount];
+    
+    CGFloat t = 0.0;
+    CGFloat dt = 1.0 / (KeyframeCount - 1);
+    
+    for(size_t frame = 0; frame < KeyframeCount; ++frame, t += dt) {
+        
+        CGFloat width = fromPoint.width + function(t) * (toPoint.width - fromPoint.width);
+        CGFloat height = fromPoint.height + function(t) * (toPoint.height - fromPoint.height);
+        
+        [values addObject:[NSValue valueWithCGSize:CGSizeMake(width, height)]];
+        
+    }
+    
+    CAKeyframeAnimation *animation = [CAKeyframeAnimation animationWithKeyPath:keyPath];
+    [animation setValues:values];
+    
+    return animation;
+}
+
+
+
+#pragma mark - CAKeyFrameAnimation factories for iOS8
+
+CAKeyframeAnimation *AnimationWithCGPointiOS8(NSString *keyPath, ViewEasingFunctionPointerType function, CGPoint finalPoint, CGPoint diffPoint) {
+    
+    NSMutableArray *values = [NSMutableArray arrayWithCapacity:KeyframeCount];
+    
+    CGFloat t = 0.0;
+    CGFloat dt = 1.0 / (KeyframeCount - 1);
+    
+    CGPoint beginPoint = finalPoint;
+    beginPoint.x += diffPoint.x;
+    beginPoint.y += diffPoint.y;
+    
+    for(size_t frame = 0; frame < KeyframeCount; ++frame, t += dt) {
+        
+        CGFloat x = beginPoint.x - function(t) * diffPoint.x;
+        CGFloat y = beginPoint.y - function(t) * diffPoint.y;
+        
+        [values addObject:[NSValue valueWithCGPoint:CGPointMake(x, y)]];
+        
+    }
+    
+    CAKeyframeAnimation *animation = [CAKeyframeAnimation animationWithKeyPath:keyPath];
+    [animation setValues:values];
+    
+    return animation;
+}
+
+
+CAKeyframeAnimation *AnimationWithCGSizeiOS8(NSString *keyPath, ViewEasingFunctionPointerType function, CGSize finalSize, CGSize diffSize) {
+    
+    NSMutableArray *values = [NSMutableArray arrayWithCapacity:KeyframeCount];
+    
+    CGFloat t = 0.0;
+    CGFloat dt = 1.0 / (KeyframeCount - 1);
+    
+    CGSize beginSize = finalSize;
+    beginSize.width += diffSize.width;
+    beginSize.height += diffSize.height;
+    
+    for(size_t frame = 0; frame < KeyframeCount; ++frame, t += dt) {
+        
+        CGFloat width = beginSize.width - function(t) * diffSize.width;
+        CGFloat height = beginSize.height - function(t) * diffSize.height;
+        
+        [values addObject:[NSValue valueWithCGSize:CGSizeMake(width, height)]];
+        
+    }
+    
+    CAKeyframeAnimation *animation = [CAKeyframeAnimation animationWithKeyPath:keyPath];
+    [animation setValues:values];
+    
+    return animation;
+}
+
+
 #pragma mark - CALayer
 
 static NSString *const LayerEasingFunctionsKey = @"ui+ef_LayerEasingFunctionsKey";
@@ -234,7 +316,7 @@ static BOOL Swizzled = NO;
     
     CABasicAnimation *basicAnimation = (CABasicAnimation *)anim;
     
-    NSValue *curentValue = [self valueForKey:keyPath];
+    NSValue *curentValue = [self valueForKeyPath:keyPath];
     NSValue *fromValue = basicAnimation.fromValue ?: curentValue;
     NSValue *toValue = basicAnimation.toValue ?: curentValue;
     
@@ -273,14 +355,39 @@ static BOOL Swizzled = NO;
     }
     
     else if (strcmp(@encode(CGPoint), [fromValue objCType]) == 0) {
+
+        if([[NSProcessInfo processInfo] isOperatingSystemAtLeastVersion:iOSVersion8])
+        {
+            CGPoint final = [curentValue CGPointValue];
+            CGPoint diff = [fromValue CGPointValue];
+            
+            override = AnimationWithCGPointiOS8(keyPath, function, final, diff);
+        }
+        else
+        {
+            CGPoint from = [fromValue CGPointValue];
+            CGPoint to = [toValue CGPointValue];
+            
+            override = AnimationWithCGPoint(keyPath, function, from, to);
+        }
+    }
+    
+    else if (strcmp(@encode(CGSize), [fromValue objCType]) == 0) {
         
-        /* CGPoint */
-        
-        CGPoint from = [fromValue CGPointValue];
-        CGPoint to = [toValue CGPointValue];
-        
-        override = AnimationWithCGPoint(keyPath, function, from, to);
-        
+        if([[NSProcessInfo processInfo] isOperatingSystemAtLeastVersion:iOSVersion8])
+        {
+            CGSize final = [curentValue CGSizeValue];
+            CGSize diff = [fromValue CGSizeValue];
+            
+            override = AnimationWithCGSizeiOS8(keyPath, function, final, diff);
+        }
+        else
+        {
+            CGSize from = [fromValue CGSizeValue];
+            CGSize to = [toValue CGSizeValue];
+            
+            override = AnimationWithCGSize(keyPath, function, from, to);
+        }
     }
     
     else if (strcmp(@encode(CGRect), [fromValue objCType]) == 0) {
@@ -348,8 +455,15 @@ static BOOL Swizzled = NO;
     else if ([keyPath isEqualToString:@"frame"]) {
         
         [self.layer setEasingFunction:function forKeyPath:@"position"];
-        [self.layer setEasingFunction:function forKeyPath:@"bounds"];
+        [self.layer setEasingFunction:function forKeyPath:@"bounds.origin"];
+        [self.layer setEasingFunction:function forKeyPath:@"bounds.size"];
         
+    }
+    
+    else if ([keyPath isEqualToString:@"bounds"]) {
+        
+        [self.layer setEasingFunction:function forKeyPath:@"bounds.origin"];
+        [self.layer setEasingFunction:function forKeyPath:@"bounds.size"];
     }
     
     else
@@ -368,14 +482,20 @@ static BOOL Swizzled = NO;
     else if ([keyPath isEqualToString:@"frame"]) {
         
         [self.layer removeEasingFunctionForKeyPath:@"position"];
-        [self.layer removeEasingFunctionForKeyPath:@"bounds"];
+        [self.layer removeEasingFunctionForKeyPath:@"bounds.origin"];
+        [self.layer removeEasingFunctionForKeyPath:@"bounds.size"];
         
+    }
+    
+    else if ([keyPath isEqualToString:@"bounds"]) {
+        
+        [self.layer removeEasingFunctionForKeyPath:@"bounds.origin"];
+        [self.layer removeEasingFunctionForKeyPath:@"bounds.size"];
     }
     
     else
         [self.layer removeEasingFunctionForKeyPath:keyPath];
     
 }
-
 
 @end
