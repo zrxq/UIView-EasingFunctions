@@ -13,7 +13,6 @@
 #pragma mark - CAKeyFrameAnimation factories
 
 static const NSUInteger KeyframeCount = 60;
-static const NSOperatingSystemVersion iOSVersion8 = (NSOperatingSystemVersion){8,0,0};
 
 CAKeyframeAnimation *AnimationWithCGFloat(NSString *keyPath, ViewEasingFunctionPointerType function, CGFloat fromValue, CGFloat toValue) {
     
@@ -356,7 +355,7 @@ static BOOL Swizzled = NO;
     
     else if (strcmp(@encode(CGPoint), [fromValue objCType]) == 0) {
 
-        if([[NSProcessInfo processInfo] isOperatingSystemAtLeastVersion:iOSVersion8])
+        if(floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_7_1)
         {
             CGPoint final = [curentValue CGPointValue];
             CGPoint diff = [fromValue CGPointValue];
@@ -374,7 +373,7 @@ static BOOL Swizzled = NO;
     
     else if (strcmp(@encode(CGSize), [fromValue objCType]) == 0) {
         
-        if([[NSProcessInfo processInfo] isOperatingSystemAtLeastVersion:iOSVersion8])
+        if(floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_7_1)
         {
             CGSize final = [curentValue CGSizeValue];
             CGSize diff = [fromValue CGSizeValue];
@@ -455,15 +454,30 @@ static BOOL Swizzled = NO;
     else if ([keyPath isEqualToString:@"frame"]) {
         
         [self.layer setEasingFunction:function forKeyPath:@"position"];
-        [self.layer setEasingFunction:function forKeyPath:@"bounds.origin"];
-        [self.layer setEasingFunction:function forKeyPath:@"bounds.size"];
+        if(floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_7_1)
+        {
+            [self.layer setEasingFunction:function forKeyPath:@"bounds.origin"];
+            [self.layer setEasingFunction:function forKeyPath:@"bounds.size"];
+        }
+        else
+        {
+            [self.layer setEasingFunction:function forKeyPath:@"bounds"];   
+        }
         
     }
     
     else if ([keyPath isEqualToString:@"bounds"]) {
         
-        [self.layer setEasingFunction:function forKeyPath:@"bounds.origin"];
-        [self.layer setEasingFunction:function forKeyPath:@"bounds.size"];
+        if(floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_7_1)
+        {
+            [self.layer setEasingFunction:function forKeyPath:@"bounds.origin"];
+            [self.layer setEasingFunction:function forKeyPath:@"bounds.size"];
+        }
+        else
+        {
+            [self.layer setEasingFunction:function forKeyPath:@"bounds"];
+        }
+
     }
     
     else
@@ -482,15 +496,29 @@ static BOOL Swizzled = NO;
     else if ([keyPath isEqualToString:@"frame"]) {
         
         [self.layer removeEasingFunctionForKeyPath:@"position"];
-        [self.layer removeEasingFunctionForKeyPath:@"bounds.origin"];
-        [self.layer removeEasingFunctionForKeyPath:@"bounds.size"];
+        if(floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_7_1)
+        {
+            [self.layer removeEasingFunctionForKeyPath:@"bounds.origin"];
+            [self.layer removeEasingFunctionForKeyPath:@"bounds.size"];
+        }
+        else
+        {
+            [self.layer removeEasingFunctionForKeyPath:@"bounds"];
+        }
         
     }
     
     else if ([keyPath isEqualToString:@"bounds"]) {
         
-        [self.layer removeEasingFunctionForKeyPath:@"bounds.origin"];
-        [self.layer removeEasingFunctionForKeyPath:@"bounds.size"];
+        if(floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_7_1)
+        {
+            [self.layer removeEasingFunctionForKeyPath:@"bounds.origin"];
+            [self.layer removeEasingFunctionForKeyPath:@"bounds.size"];
+        }
+        else
+        {
+            
+        }
     }
     
     else
