@@ -19,11 +19,11 @@ Easing functions?
 Installation
 ------------
 
-###Cocoapods###
+###CocoaPods###
 
-[Cocoapods](https://github.com/CocoaPods/CocoaPods) is an Objective-C library manager.
+[CocoaPods](https://github.com/CocoaPods/CocoaPods) is an Objective-C library manager.
 
-Adding UIView+EasingFunctions to your project using Cocoapods is as easy as adding the following line to your `Podfile`: 
+Adding UIView+EasingFunctions to your project using CocoaPods is as easy as adding the following line to your `Podfile`: 
 
 ```ruby
 pod 'UIView+EasingFunctions'
